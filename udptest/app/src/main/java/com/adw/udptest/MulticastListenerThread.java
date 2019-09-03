@@ -42,9 +42,9 @@ class MulticastListenerThread extends MulticastThread {
                     break;
                 }
                 this.multicastSocket.receive(datagramPacket);
-                String trim = this.activity.isDisplayedInHex() ? "" + bytesToHex(Arrays.copyOf(datagramPacket.getData(), datagramPacket.getLength())) : new String(datagramPacket.getData()).trim();
-                this.activity.log("Received! " + trim);
-                this.handler.post(new $Lambda$1(this, "[" + (getLocalIP().equals(datagramPacket.getAddress().getHostAddress()) ? "You" : datagramPacket.getAddress().getHostAddress()) + "] " + trim + "\n"));
+                //String trim = this.activity.isDisplayedInHex() ? "" + bytesToHex(Arrays.copyOf(datagramPacket.getData(), datagramPacket.getLength())) : new String(datagramPacket.getData()).trim();
+                this.activity.log("Received! " );
+                this.handler.post(new $Lambda$1(this, "[" + (getLocalIP().equals(datagramPacket.getAddress().getHostAddress()) ? "You" : datagramPacket.getAddress().getHostAddress()) + "] " + "\n"));
             } catch (IOException e) {
             }
         }

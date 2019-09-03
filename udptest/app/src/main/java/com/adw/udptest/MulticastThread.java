@@ -1,12 +1,18 @@
 package com.adw.udptest;
 
+import android.content.Context;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
+
+import androidx.annotation.RequiresApi;
+
 import java.io.IOException;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class MulticastThread extends Thread {
@@ -39,9 +45,10 @@ class MulticastThread extends Thread {
         return this.inetAddress.getHostAddress();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void run() {
         try {
-            int ipAddress = ((WifiManager) this.activity.getSystemService("wifi")).getConnectionInfo().getIpAddress();
+            int ipAddress = ((WifiManager) Objects.requireNonNull(this.activity.getApplicationContext().getSystemService(Context.WIFI_SERVICE))).getConnectionInfo().getIpAddress();
             this.inetAddress = InetAddress.getByAddress(new byte[]{(byte) (ipAddress & 255), (byte) ((ipAddress >> 8) & 255), (byte) ((ipAddress >> 16) & 255), (byte) ((ipAddress >> 24) & 255)});
             NetworkInterface byInetAddress = NetworkInterface.getByInetAddress(this.inetAddress);
             this.multicastSocket = new MulticastSocket(this.multicastPort);

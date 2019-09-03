@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textViewState, textViewPrompt;
     MulticastSocket multicastSocket;
 
-    static final int UdpServerPORT = 10004;
+    static final int UdpServerPORT = 10000;
 
     UdpServerThread udpServerThread;
 
@@ -102,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
                 multicastSocket = new MulticastSocket(serverPort);
                 InetAddress castAddress = InetAddress.getByName("224.3.29.71");
                 multicastSocket.joinGroup(castAddress);
-//                multicastSocket.setSoTimeout(100);
-//                multicastSocket.setTimeToLive(8);
 
                 updateState("UDP Server is running");
                 Log.e(TAG, "UDP Server is running");
@@ -114,11 +112,10 @@ public class MainActivity extends AppCompatActivity {
                     // receive request
                     //DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     DatagramPacket packet = new DatagramPacket(new byte[512], 512);
-
+                    packet.setData(new byte[1024]);
 
 
                     multicastSocket.receive(packet);     //this code block the program flow
-                    updateState("UDP Server is tset");
 
                     // send the response to the client at "address" and "port"
                     InetAddress address = packet.getAddress();
@@ -131,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
                     buf = dString.getBytes();
                     packet = new DatagramPacket(buf, buf.length, address, port);
                     multicastSocket.send(packet);
-                    break;
                 }
 
                 Log.e(TAG, "UDP Server ended");
@@ -145,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 if(multicastSocket != null){
                     multicastSocket.close();
                     Log.e(TAG, "socket.close()");
+                    updateState("Closed port");
                 }
             }
         }

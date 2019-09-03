@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void clientEnd(){
         udpClientThread = null;
-        textViewState.setText("clientEnd()");
+        textViewState.setText("Sent");
         buttonConnect.setEnabled(true);
 
     }
