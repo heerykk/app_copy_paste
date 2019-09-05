@@ -2,9 +2,17 @@ package com.adw.udptest4;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -19,6 +27,9 @@ import java.util.Enumeration;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
+
+    private ClipboardManager myClipboard;
+    private ClipData myClip;
 
     TextView infoIp, infoPort;
     TextView textViewState, textViewPrompt;
@@ -96,32 +107,59 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
 
             running = true;
+            myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
+
+
+
+//            Looper.prepare();
+//            try {
+//                WifiManager.MulticastLock lock = null;
+//                WifiManager wifi;
+//                updateState("Starting UDP lock");
+//                wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//                if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+//                    if (lock == null)
+//                        updateState("Starting UDP lock");
+//                        lock = wifi.createMulticastLock("WiFi_Lock");
+//                    lock.setReferenceCounted(true);
+//                    lock.acquire();
+//                }
+//            }
+//            catch(Exception e)
+//            {
+//                Log.d("Wifi Exception",""+e.getMessage().toString());
+//            }
 
             try {
                 updateState("Starting UDP Server");
                 multicastSocket = new MulticastSocket(serverPort);
                 InetAddress castAddress = InetAddress.getByName("224.3.29.71");
                 multicastSocket.joinGroup(castAddress);
-
+                multicastSocket.setBroadcast(true);
                 updateState("UDP Server is running");
                 Log.e(TAG, "UDP Server is running");
 
-                while(running){
+                while(true){
                     byte[] buf = new byte[256];
 
                     // receive request
-                    //DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     DatagramPacket packet = new DatagramPacket(new byte[512], 512);
                     packet.setData(new byte[1024]);
 
-
                     multicastSocket.receive(packet);     //this code block the program flow
-
+                    updateState("UDP Server test");
                     // send the response to the client at "address" and "port"
                     InetAddress address = packet.getAddress();
                     int port = packet.getPort();
                     String trim = new String(packet.getData());
-                    updatePrompt("Request containing -" + trim + "from: " + address + ":" + port + "\n");
+                    updatePrompt("Request containing -" + trim + " from: " + address + ":" + port + "\n");
+
+                    myClip = ClipData.newPlainText("text", trim);
+                    myClipboard.setPrimaryClip(myClip);
+
+                    Toast.makeText(getApplicationContext(), "Text Copied",
+                            Toast.LENGTH_SHORT).show();
 
                     String dString = new Date().toString() + "\n"
                             + "Your address " + address.toString() + ":" + String.valueOf(port);
@@ -130,16 +168,14 @@ public class MainActivity extends AppCompatActivity {
                     multicastSocket.send(packet);
                 }
 
-                Log.e(TAG, "UDP Server ended");
+                //Log.e(TAG, "UDP Server ended");
 
             } catch (Exception e) {
                 updateState(e.getMessage());
                 e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
             } finally {
                 if(multicastSocket != null){
-                    multicastSocket.close();
+                    //multicastSocket.close();
                     Log.e(TAG, "socket.close()");
                     updateState("Closed port");
                 }
@@ -164,9 +200,7 @@ public class MainActivity extends AppCompatActivity {
                         ip += "SiteLocalAddress: "
                                 + inetAddress.getHostAddress() + "\n";
                     }
-
                 }
-
             }
 
         } catch (SocketException e) {

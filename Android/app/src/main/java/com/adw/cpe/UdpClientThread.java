@@ -1,4 +1,4 @@
-package com.adw.udptest3;
+package com.adw.cpe;
 
 import android.os.Message;
 
@@ -11,6 +11,7 @@ public class UdpClientThread extends Thread{
 
     String dstAddress;
     String message;
+    String Copyied;
     int dstPort;
     private boolean running;
     MainActivity activity;
@@ -21,8 +22,9 @@ public class UdpClientThread extends Thread{
     DatagramSocket socket;
     InetAddress address;
 
-    public UdpClientThread(MainActivity.UdpClientHandler handler) {
+    public UdpClientThread(String text, MainActivity.UdpClientHandler handler) {
         super();
+        Copyied = text;
         this.handler = handler;
     }
 
@@ -46,7 +48,7 @@ public class UdpClientThread extends Thread{
             socket = new DatagramSocket();
             address = InetAddress.getByName("224.3.29.71");
 
-            String massage = "test henry";
+            String massage = Copyied;
             byte[] buf = massage.getBytes();
 
             multicastSocket = new MulticastSocket(10000);

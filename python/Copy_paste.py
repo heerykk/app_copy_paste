@@ -1,4 +1,7 @@
 from tkinter import Tk, Label, RAISED
+import socket
+import struct
+import sys
 import pyperclip
 
 def updateClipboard():
@@ -11,8 +14,13 @@ def processClipping(cliptext):
     label["text"] = cliptextCleaned
 
 def cleanClipText(cliptext):
-    #Removing all characters > 65535 (that's the range for tcl)
     cliptext = "".join([c for c in cliptext if ord(c) <= 65535])
+    multicast_group = ('224.3.29.71', 10000)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(0.2)
+    ttl = struct.pack('b', 8)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
+    sent = sock.sendto(cliptext, multicast_group)
     return cliptext
 
 def onClick(labelElem):

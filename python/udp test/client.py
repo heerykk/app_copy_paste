@@ -2,7 +2,7 @@ import socket
 import struct
 import sys
 
-message = 'very important data'
+message = ''
 multicast_group = ('224.3.29.71', 10000)
 ##server_address = ('', 10001)
 # Create the datagram socket
@@ -17,14 +17,15 @@ sock.settimeout(0.2)
 
 # Set the time-to-live for messages to 1 so they do not go past the
 # local network segment.
-ttl = struct.pack('b', 1)
+ttl = struct.pack('b', 8)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
 try:
 
     # Send data to the multicast group
-    print >>sys.stderr, 'sending "%s"' % message
     sent = sock.sendto(message, multicast_group)
+    print >>sys.stderr, 'sending "%s"' % message
+    
 
     # Look for responses from all recipients
     while True:

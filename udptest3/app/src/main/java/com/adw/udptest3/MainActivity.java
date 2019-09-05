@@ -6,12 +6,10 @@ import android.os.Message;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText editTextAddress, editTextPort;
     Button buttonConnect;
     TextView textViewState, textViewRx;
 
@@ -23,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editTextAddress = (EditText) findViewById(R.id.address);
-        editTextPort = (EditText) findViewById(R.id.port);
         buttonConnect = (Button) findViewById(R.id.connect);
         textViewState = (TextView)findViewById(R.id.state);
         textViewRx = (TextView)findViewById(R.id.received);
@@ -41,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View arg0) {
 
                     udpClientThread = new UdpClientThread(
-                            editTextAddress.getText().toString(),
-                            Integer.parseInt(editTextPort.getText().toString()),
                             udpClientHandler);
                     udpClientThread.start();
 
