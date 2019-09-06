@@ -1,8 +1,9 @@
 import socket
 import struct
 import sys
+import pyperclip
 
-message = ''
+message = 'very important data'
 multicast_group = ('224.3.29.71', 10000)
 ##server_address = ('', 10001)
 # Create the datagram socket
@@ -19,25 +20,26 @@ sock.settimeout(0.2)
 # local network segment.
 ttl = struct.pack('b', 8)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
-
-try:
-
-    # Send data to the multicast group
-    sent = sock.sendto(message, multicast_group)
-    print >>sys.stderr, 'sending "%s"' % message
-    
-
-    # Look for responses from all recipients
-    while True:
-        print >>sys.stderr, 'waiting to receive'
+lastCopy = pyperclip.paste()
+while True:
+    if pyperclip.paste() != lastCopy:
         try:
-            data, server = sock.recvfrom(16)
-        except socket.timeout:
-            print >>sys.stderr, 'timed out, no more responses'
-            break
-        else:
-            print >>sys.stderr, 'received "%s" from %s' % (data, server)
+            # Send data to the multicast group
+            print >>sys.stderr, 'sending "%s"' % pyperclip.paste()
+            sent = sock.sendto(pyperclip.paste(), multicast_group)
 
-finally:
-    print >>sys.stderr, 'closing socket'
-    sock.close()
+            # Look for responses from all recipients
+            while True:
+                print >>sys.stderr, 'waiting to receive'
+                try:
+                    data, server = sock.recvfrom(16)
+                except socket.timeout:
+                    print >>sys.stderr, 'timed out, no more responses'
+                    lastCopy = pyperclip.paste()
+                    break
+                else:
+                    print >>sys.stderr, 'received "%s" from %s' % (data, server)
+                    lastCopy = pyperclip.paste()
+        finally:
+            print >>sys.stderr, ''
+            ##sock.close()

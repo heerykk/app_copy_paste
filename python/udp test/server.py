@@ -1,6 +1,7 @@
 import socket
 import struct
 import sys
+import pyperclip
 
 message = 'very important data'
 multicast_group = ('224.3.29.71', 10000)
@@ -33,6 +34,7 @@ try:
             print ('timed out, no more responses')
             break
         else:
+            pyperclip.copy(str(data))
             print ('received "%s" from %s' % (data, server))
 finally:
     print >> sys.stderr, 'closing socket'

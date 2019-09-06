@@ -7,6 +7,35 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="292dp"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/infoport"
+        android:layout_width="407dp"
+        android:layout_height="26dp"
+        android:layout_marginBottom="21dp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/prompt"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/infoip"
+        android:layout_width="415dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="38dp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@+id/infoport"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
         android:id="@+id/received"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

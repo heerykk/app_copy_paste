@@ -108,28 +108,14 @@ public class MainActivity extends AppCompatActivity {
 
             running = true;
             myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-
-
-
-
-//            Looper.prepare();
-//            try {
-//                WifiManager.MulticastLock lock = null;
-//                WifiManager wifi;
-//                updateState("Starting UDP lock");
-//                wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-//                if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-//                    if (lock == null)
-//                        updateState("Starting UDP lock");
-//                        lock = wifi.createMulticastLock("WiFi_Lock");
-//                    lock.setReferenceCounted(true);
-//                    lock.acquire();
+//            @todo auto copy paste
+//            final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//            clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
+//                public void onPrimaryClipChanged() {
+//                    String a = clipboard.getText().toString();
+//                    Toast.makeText(getBaseContext(),"Copy:\n"+a,Toast.LENGTH_LONG).show();
 //                }
-//            }
-//            catch(Exception e)
-//            {
-//                Log.d("Wifi Exception",""+e.getMessage().toString());
-//            }
+//            });
 
             try {
                 updateState("Starting UDP Server");
@@ -140,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 updateState("UDP Server is running");
                 Log.e(TAG, "UDP Server is running");
 
-                while(true){
+                while(running){
                     byte[] buf = new byte[256];
 
                     // receive request
@@ -151,21 +137,22 @@ public class MainActivity extends AppCompatActivity {
                     updateState("UDP Server test");
                     // send the response to the client at "address" and "port"
                     InetAddress address = packet.getAddress();
+                    InetAddress hostIP = InetAddress.getLocalHost();
                     int port = packet.getPort();
                     String trim = new String(packet.getData());
                     updatePrompt("Request containing -" + trim + " from: " + address + ":" + port + "\n");
+                    if (address != hostIP){
+                        myClip = ClipData.newPlainText("text", trim);
+                        myClipboard.setPrimaryClip(myClip);
+                    }
 
-                    myClip = ClipData.newPlainText("text", trim);
-                    myClipboard.setPrimaryClip(myClip);
 
-                    Toast.makeText(getApplicationContext(), "Text Copied",
-                            Toast.LENGTH_SHORT).show();
 
                     String dString = new Date().toString() + "\n"
                             + "Your address " + address.toString() + ":" + String.valueOf(port);
                     buf = dString.getBytes();
                     packet = new DatagramPacket(buf, buf.length, address, port);
-                    multicastSocket.send(packet);
+                    //multicastSocket.send(packet);
                 }
 
                 //Log.e(TAG, "UDP Server ended");
@@ -176,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
             } finally {
                 if(multicastSocket != null){
                     //multicastSocket.close();
+                    run();
                     Log.e(TAG, "socket.close()");
                     updateState("Closed port");
                 }
@@ -197,8 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     InetAddress inetAddress = enumInetAddress.nextElement();
 
                     if (inetAddress.isSiteLocalAddress()) {
-                        ip += "SiteLocalAddress: "
-                                + inetAddress.getHostAddress() + "\n";
+                        ip += "SiteLocalAddress: " + inetAddress.getHostAddress() + "\n";
                     }
                 }
             }
