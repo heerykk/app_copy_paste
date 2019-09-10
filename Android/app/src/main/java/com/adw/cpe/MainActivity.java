@@ -42,9 +42,11 @@ public class MainActivity extends AppCompatActivity {
     static final int UdpServerPORT = 10000;
     UdpServerThread udpServerThread;
 
+    // Declare variables for the clipboard
     private ClipboardManager myClipboard;
     private ClipData myClip;
 
+    // This class is run when the application is opened
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
+        // Runs when the copy button is pressed and will copy text to clipboard
         b1.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // All ways running to react when clipboard changes
         final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
             public void onPrimaryClipChanged() {
@@ -129,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
                     buttonConnect.setEnabled(false);
                 }
             };
+
+    // method to display massgas on screen
     private void updateStateC(String state){
         textViewState.setText(state);
     }
@@ -210,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // class for the udp server
     private class UdpServerThread extends Thread{
 
         int serverPort;
@@ -225,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        // This will run when the class is called
         public void run() {
 
             running = true;
@@ -288,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // gets ip address as string
     private String getIpAddress() {
         String ip = "";
         try {
