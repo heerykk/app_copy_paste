@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         b2 = (Button) findViewById(R.id.button2);
         b1 = (Button) findViewById(R.id.button);
 
-        // veriables for sending
+        // variables for sending
         buttonConnect = (Button) findViewById(R.id.connect);
         textViewState = (TextView)findViewById(R.id.state);
         textViewRx = (TextView)findViewById(R.id.received);
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             super();
             this.parent = parent;
         }
-
+        
         @Override
         public void handleMessage(Message msg) {
 
