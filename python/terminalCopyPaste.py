@@ -20,9 +20,7 @@ class ServerThread(threading.Thread):
         while True:
             print ('waiting to receive')
             try:
-                print ("test for server1")
                 data, server = sock.recvfrom(16)
-                print ("test for server2")
             except socket.timeout:
                 pyperclip.copy(str(data))
                 print ('timed out, no more responses')
@@ -65,7 +63,6 @@ class ClientThread(threading.Thread):
                             break
                         else:
                             print >>sys.stderr, 'received "%s" from %s' % (data, server)
-                            lastCopy = pyperclip.paste()
                 finally:
                     print >>sys.stderr, ''
                     ##sock.close()
