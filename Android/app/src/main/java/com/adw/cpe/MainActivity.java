@@ -246,13 +246,13 @@ public class MainActivity extends AppCompatActivity {
                 multicastSocket.setBroadcast(true);
                 updateState("UDP Server is running");
 
-                final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
-                    public void onPrimaryClipChanged() {
-                        String a = clipboard.getText().toString();
-                        Toast.makeText(getBaseContext(),"Copy:\n"+a,Toast.LENGTH_LONG).show();
-                    }
-                });
+//                final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//                clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
+//                    public void onPrimaryClipChanged() {
+//                        String a = clipboard.getText().toString();
+//                        Toast.makeText(getBaseContext(),"Copy:\n"+a,Toast.LENGTH_LONG).show();
+//                    }
+//                });
 
                 while(running){
                     byte[] buf = new byte[256];
@@ -260,6 +260,10 @@ public class MainActivity extends AppCompatActivity {
                     // receive request
                     DatagramPacket packet = new DatagramPacket(new byte[512], 512);
                     packet.setData(new byte[1024]);
+                    ClipData abc = myClipboard.getPrimaryClip();
+                    ClipData.Item item = abc.getItemAt(0);
+
+                    String currentClip = item.getText().toString();
 
                     multicastSocket.receive(packet);     //this code block the program flow
                     updateState("UDP Server test");
@@ -268,12 +272,13 @@ public class MainActivity extends AppCompatActivity {
                     String hostIP = "/" + getIpAddress();
                     int port = packet.getPort();
                     String trim = new String(packet.getData());
-                    updatePrompt("Request containing -" + trim + " from: " + address + ":" + port + "\n");
-                    if (!address.toString().equals(hostIP)){
-                        myClip = ClipData.newPlainText("text", trim);
-                        myClipboard.setPrimaryClip(myClip);
+                    if (!currentClip.equals(trim)) {
+                        if (!address.toString().equals(hostIP)) {
+                            updatePrompt("Request containing -" + trim + " from: " + address + ":" + port + "\n");
+                            myClip = ClipData.newPlainText("text", trim);
+                            myClipboard.setPrimaryClip(myClip);
+                        }
                     }
-
 
 
                     String dString = new Date().toString() + "\n"
