@@ -21,12 +21,17 @@ class ServerThread(threading.Thread):
             print ('waiting to receive')
             try:
                 data, server = sock.recvfrom(16)
-            except socket.timeout:
+                mutex.acquire()
+                flag = False
                 pyperclip.copy(str(data))
+                flag = True
+                mutex.release()
+            except socket.timeout:
+                ##pyperclip.copy(str(data))
                 print ('timed out, no more responses')
                 break
             else:
-                pyperclip.copy(str(data))
+                ##pyperclip.copy(str(data))
                 print ('received "%s" from %s' % (data, server))
 
 
@@ -45,30 +50,42 @@ class ClientThread(threading.Thread):
         ttl = struct.pack('b', 8)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
         lastCopy = pyperclip.paste()
+        flagx = True
         while True:
             if pyperclip.paste() != lastCopy:
-                try:
-                    # Send data to the multicast group
-                    print >>sys.stderr, 'sending "%s"' % pyperclip.paste()
-                    sent = sock.sendto(pyperclip.paste(), multicast_group)
+                mutex.acquire()
+                flagx = flag
+                print str(flag) + " !!!!!!!!!!!!!!!!!!!!!!!!!!"
+                mutex.release()
+                if flagx == True:
+                    try:
+                        # Send data to the multicast group
+                        print "\n" + pyperclip.paste()
+                        print lastCopy + "\n"
+                        lastCopy = pyperclip.paste()
+                        print >>sys.stderr, 'sending "%s"' % pyperclip.paste()
+                        sent = sock.sendto(str(pyperclip.paste()), multicast_group)
 
-                    # Look for responses from all recipients
-                    while True:
-                        print >>sys.stderr, 'waiting to receive'
-                        try:
-                            data, server = sock.recvfrom(16)
-                        except socket.timeout:
-                            print >>sys.stderr, 'timed out, no more responses'
-                            lastCopy = pyperclip.paste()
-                            break
-                        else:
-                            print >>sys.stderr, 'received "%s" from %s' % (data, server)
-                finally:
-                    print >>sys.stderr, ''
-                    ##sock.close()
+                        # Look for responses from all recipients
+                        #while True:
+                            #print >>sys.stderr, 'waiting to receive'
+                            #try:
+                                #data, server = sock.recvfrom(16)
+                            #except socket.timeout:
+                                #print >>sys.stderr, 'timed out, no more responses'
+                                #lastCopy = pyperclip.paste()
+                                #break
+                            #else:
+                                #print >>sys.stderr, 'received "%s" from %s' % (data, server)
+                    finally:
+                        print >>sys.stderr, ''
+                        ##sock.close()
             
 global client
 global server
+global flag
+mutex = threading.Lock()
+flag = True
 client = ClientThread()
 server = ServerThread()
 server.start()
