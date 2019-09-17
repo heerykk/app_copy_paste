@@ -77,6 +77,10 @@ class ClientThread(threading.Thread):
                                 #break
                             #else:
                                 #print >>sys.stderr, 'received "%s" from %s' % (data, server)
+                    except ValueError:
+                        print "failed to copy"
+                        continue
+                        
                     finally:
                         print >>sys.stderr, ''
                         ##sock.close()
